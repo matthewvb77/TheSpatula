@@ -8,7 +8,7 @@ Current Steps:
 1) Scrape reddit for posts containing tickers, and collect the posts info.
 2) Create postGres data-base with said info.
 3) Create graphs, with 'interest in stock' overlayed with price.
-4)Feed info into linear regression model?
+4) Feed info into linear regression model?
 
 List of useful subreddits: 
 r/CryptoCurrency 
