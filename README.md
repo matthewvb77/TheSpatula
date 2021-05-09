@@ -5,8 +5,8 @@ Goal-> To predict stocks that are about to boom, whether this boom is brief or l
 
 Current Steps:
 
-1) Use reddit_scraper for bulk data collection, this will build/update a mySQL database
-2) Once you have found a handful of stocks of interest, use youtube_scraper for more pointed data
+1) Use reddit_scraper for bulk data collection, this will update the "TheSpatula.reddit" Table with MySQL
+2) Once you have found a handful of stocks of interest, use youtube_scraper for more pointed data, this will update the "TheSpatula.youtube_<stock>" Table
 3) Create graphs, with 'interest in stock' overlayed with price.
 4) Feed info into linear regression model?
 
