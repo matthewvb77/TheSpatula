@@ -1,5 +1,9 @@
 #Reddit account info
-praw.ini
+Scripts/praw.ini
 
 #File I'm using as a resource
-WebScraping Tutorial.ipynb
+Scripts/WebScraping Tutorial.ipynb
+
+#checkpoints
+Scripts/.ipynb_checkpoints*
+.ipynb_checkpoints
