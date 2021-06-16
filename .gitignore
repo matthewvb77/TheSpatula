@@ -7,3 +7,8 @@ Scripts/.ipynb_checkpoints*
 
 # IDK
 ~$IDEAS.docx
+
+# Hiding credentials
+Scripts/mac_creds.json
+Scripts/win_creds.json
+
