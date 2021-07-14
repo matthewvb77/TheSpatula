@@ -1,9 +1,9 @@
-TheSpatula
-Web Scraping Toolbox For Stock Research
+##TheSpatula
+###Web Scraping Toolbox For Stock Research
 
 Goal-> To predict stocks that are about to boom, whether this boom is brief or long-term.
 
-Current Steps:
+###Current Steps:
 
 1) Use reddit_scraper for bulk data collection, this will update the "TheSpatula.reddit" Table with MySQL
 2) Once you have found a handful of stocks of interest, use youtube_scraper for more pointed data, this will update the "TheSpatula.youtube" Table
