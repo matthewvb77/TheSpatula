@@ -25,3 +25,5 @@ r/trakstocks
 r/ausstocks 
 r/shroomstocks 
 r/Canadapennystocks
+
+CURRENT my.ini file location: C:\ProgramData\MySQL\MySQL Server 8.0\my.ini
