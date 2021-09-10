@@ -1,13 +1,10 @@
 # Reddit account info
-#Scripts/praw.ini
+# Scripts/praw.ini
 
-# Checkpoints
-Scripts/.ipynb_checkpoints*
-.ipynb_checkpoints
+# IDEAS
 
-# IDK
 ~$IDEAS.docx
-
+.idea/
 # Hiding credentials
 Scripts/mac_creds.json
 Scripts/win_creds.json
