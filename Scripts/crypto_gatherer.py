@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 import sys
 
@@ -28,14 +28,11 @@ class Gatherers:
     def get_cryptos(self):
         print("[1/3] Opening Headless Browser...")
 
-        # # Use Headless browser
-        # options = Options()
-        # options.add_argument('--headless')
-        # options.add_argument('--disable-gpu')
-        # driver = webdriver.Chrome(path, options=options)
-        # wait = WebDriverWait(driver, 20)
-
-        driver = webdriver.Chrome(path)
+        # Use Headless browser
+        options = Options()
+        options.add_argument('--headless')
+        options.add_argument('--disable-gpu')
+        driver = webdriver.Chrome(path, options=options)
         wait = WebDriverWait(driver, 20)
 
         driver.get("https://ca.investing.com/crypto/currencies")
@@ -60,7 +57,7 @@ class Gatherers:
 
         with open("./../Tickers/tickers_crypto.csv", "w") as f:
             for i in tqdm(range(len(rows)), desc='[3/3] Scraping Rows'):
-                print(i)
+                # print(i)
                 try:
                     symbol = rows[i].find_element_by_xpath(
                         ".//td[contains(@class, 'js-currency-symbol')]").get_attribute("title")
