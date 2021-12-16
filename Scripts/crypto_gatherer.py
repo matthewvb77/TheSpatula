@@ -12,6 +12,9 @@ from tqdm import tqdm
 
 import sys
 
+# GLOBAL VARIABLES
+path = str()
+
 
 def config(machine):
     global path
@@ -47,7 +50,8 @@ class Gatherers:
             pass
 
         # Wait for all rows to load
-        num_rows = driver.find_element_by_xpath("//div[@class='info_line']/span[1]/a[@href='/crypto/currencies']/../../span[2]").text
+        num_rows = driver.find_element_by_xpath(
+            "//div[@class='info_line']/span[1]/a[@href='/crypto/currencies']/../../span[2]").text
         num_rows = int(num_rows.replace(',', ''))
 
         wait.until(EC.visibility_of_element_located((By.XPATH, "//table/tbody/tr[" + str(num_rows - 1) + "]")))

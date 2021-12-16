@@ -5,6 +5,12 @@ import sys
 import mysql.connector
 from matplotlib import pyplot as plt
 
+# GLOBAL VARIABLES
+path = str()
+db_user = str()
+db_host = str()
+db_password = str()
+
 
 # Sets parameters according to machine #
 def config(machine):

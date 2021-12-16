@@ -12,6 +12,12 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from tqdm import tqdm
 
+# GLOBAL VARIABLES
+path = str()
+db_user = str()
+db_host = str()
+db_password = str()
+
 
 # Sets parameters according to machine #
 def config(machine):
@@ -268,4 +274,3 @@ if __name__ == "__main__":
     deep_scrape(stocklist)
 
     print("DONE!!")
-

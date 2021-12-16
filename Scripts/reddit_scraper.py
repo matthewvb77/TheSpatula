@@ -13,6 +13,12 @@ from dateutil import tz
 
 from tqdm import tqdm
 
+# GLOBAL VARIABLES
+path = str()
+db_user = str()
+db_host = str()
+db_password = str()
+
 
 # Sets parameters according to machine #
 def config(machine):
