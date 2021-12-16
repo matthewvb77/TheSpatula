@@ -28,11 +28,14 @@ class Gatherers:
     def get_cryptos(self):
         print("[1/3] Opening Headless Browser...")
 
-        # Use Headless browser
-        options = Options()
-        options.add_argument('--headless')
-        options.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(path, options=options)
+        # # Use Headless browser
+        # options = Options()
+        # options.add_argument('--headless')
+        # options.add_argument('--disable-gpu')
+        # driver = webdriver.Chrome(path, options=options)
+        # wait = WebDriverWait(driver, 20)
+
+        driver = webdriver.Chrome(path)
         wait = WebDriverWait(driver, 20)
 
         driver.get("https://ca.investing.com/crypto/currencies")
@@ -47,7 +50,7 @@ class Gatherers:
             pass
 
         # Wait for all rows to load
-        num_rows = driver.find_element_by_xpath("//*[@id='fullColumn']/ul/li[1]/span[2]/a").text
+        num_rows = driver.find_element_by_xpath("//div[@class='info_line']/span[1]/a[@href='/crypto/currencies']/../../span[2]").text
         num_rows = int(num_rows.replace(',', ''))
 
         wait.until(EC.visibility_of_element_located((By.XPATH, "//table/tbody/tr[" + str(num_rows - 1) + "]")))
