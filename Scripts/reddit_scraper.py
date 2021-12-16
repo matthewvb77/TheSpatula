@@ -11,7 +11,7 @@ import threading
 from datetime import datetime
 from dateutil import tz
 
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 
 # Sets parameters according to machine #
