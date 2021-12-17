@@ -165,7 +165,7 @@ class YoutubeScraper:
 
         # Updating Database #
 
-        cnx = db_handler.connect_to_db("TheSpatula")
+        cnx = db_handler.connect_to_db(user, "TheSpatula")
         my_cursor = cnx.cursor()
         assert my_cursor
         assert table_exists(my_cursor, "youtube")

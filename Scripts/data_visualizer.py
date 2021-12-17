@@ -22,7 +22,7 @@ class StockHist(object):
 
 def get_hist(symbol, date_range):
     # get reddit history #
-    cnx = DatabaseHandler.connect_to_db("TheSpatula")
+    cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
     mycursor = cnx.cursor()
     assert mycursor
     assert DatabaseHandler(mycursor, "reddit")

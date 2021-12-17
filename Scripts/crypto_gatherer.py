@@ -29,7 +29,7 @@ def get_cryptos():
     wait.until(EC.visibility_of_element_located((By.XPATH, "//table/tbody/tr[" + str(num_rows - 1) + "]")))
     rows = driver.find_elements_by_xpath("//html/body/div[5]/section/div[10]/table/tbody/tr")
 
-    cnx = DatabaseHandler.connect_to_db("TheSpatula")
+    cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
     mycursor = cnx.cursor()
     assert mycursor
     assert DatabaseHandler.table_exists(mycursor, "crypto_symbols")

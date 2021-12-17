@@ -111,7 +111,7 @@ class SubredditScraper:
         # print(json_object)
 
         # Upload data to db #
-        cnx = DatabaseHandler.connect_to_db("TheSpatula")
+        cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
         mycursor = cnx.cursor()
         assert mycursor
         assert DatabaseHandler.table_exists(mycursor, "reddit")
