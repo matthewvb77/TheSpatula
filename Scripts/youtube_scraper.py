@@ -205,7 +205,7 @@ def deep_scrape(stock_data):
 
 
 if __name__ == "__main__":
-    global user
+
     user = DatabaseHandler.User("my_win")
 
     stock_list = ["TSLA"]

@@ -109,7 +109,6 @@ def plot_hist(symbol, date_range, chart_reddit, chart_youtube):
 
 
 if __name__ == "__main__":
-    global user
     user = DatabaseHandler.User("my_win")
 
     date_range = ("2021-08-01", "2021-08-10")

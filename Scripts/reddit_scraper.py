@@ -1,13 +1,10 @@
 import praw
 import csv
 import re
-import json
-import requests
-import mysql.connector
+
 import traceback
-import sys
 import threading
-import DatabaseHandler
+from Scripts import DatabaseHandler
 
 from datetime import datetime
 from dateutil import tz
@@ -114,7 +111,7 @@ class SubredditScraper:
         # print(json_object)
 
         # Upload data to db #
-        cnx = db_handler.connect_to_db("TheSpatula")
+        cnx = DatabaseHandler.connect_to_db("TheSpatula")
         mycursor = cnx.cursor()
         assert mycursor
         assert DatabaseHandler.table_exists(mycursor, "reddit")
@@ -180,8 +177,7 @@ def deep_scrape(stocklist, sublist):
 
 if __name__ == '__main__':
     # config by machine
-    global db_handler
-    db_handler = DatabaseHandler("win")
+    user = DatabaseHandler.User("my_win")
 
     # stocklist options:
     #    ["stocks"]         //all stocks on NYSE and Nasdaq
