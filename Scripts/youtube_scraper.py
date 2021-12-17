@@ -9,7 +9,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from tqdm import tqdm
 
-import DatabaseHandler
+from Scripts import DatabaseHandler
 
 
 class StockVid(object):
@@ -19,13 +19,15 @@ class StockVid(object):
         self.views = views
 
     def json_enc(self):
-        return {'stock': self.stock, 'date': self.date, 'views': self.views}
+        return {'stock': self.post_id, 'date': self.date, 'views': self.views}
+
 
 def json_def_encoder(obj):
     if hasattr(obj, 'json_enc'):
         return obj.json_enc()
     else:  # some default behavior
         return obj.__dict__
+
 
 def get_date(post):
     today = datetime.today()
@@ -71,7 +73,7 @@ def get_views(post):
     try:
         views_data = post.find_element_by_xpath(".//*[@id='metadata-line']/span[1]").text
     except:
-        # Skip if important data connot be found. #
+        # Skip if important data cannot be found. #
         return None
 
     views_data = views_data.split()
@@ -109,7 +111,7 @@ class YoutubeScraper:
         options = Options()
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(db_handler.path, options=options)
+        driver = webdriver.Chrome(user.path, options=options)
         driver.get("https://www.youtube.com/results?search_query=" + stock)
 
         actions = ActionChains(driver)
@@ -164,15 +166,15 @@ class YoutubeScraper:
         # Updating Database #
 
         cnx = db_handler.connect_to_db("TheSpatula")
-        mycursor = cnx.cursor()
-        assert mycursor
-        assert db_handler.table_exists(mycursor, "youtube")
+        my_cursor = cnx.cursor()
+        assert my_cursor
+        assert table_exists(my_cursor, "youtube")
 
         for x in tqdm(range(len(relevant_posts)), desc="[3/3] Updating Database"):
             post = relevant_posts[x]
 
             # Add post, if it exists already, update post #
-            mycursor.execute(f"""
+            my_cursor.execute(f"""
             INSERT INTO youtube (post_id, symbol, num_views, date_posted) 
             VALUES("{post.post_id}", "{stock}", {post.views}, "{post.date}")
             ON DUPLICATE KEY UPDATE num_views={post.views}
@@ -181,12 +183,12 @@ class YoutubeScraper:
             cnx.commit()
 
 
-def deep_scrape(stocklist):
+def deep_scrape(stock_data):
     threads = []
 
-    for x in tqdm(range(len(stocklist)), desc="DEEP SCRAPE"):
+    for x in tqdm(range(len(stock_data)), desc="DEEP SCRAPE"):
 
-        stock = stocklist[x]
+        stock = stock_data[x]
 
         if stock == "":
             raise Exception(f"Empty string in stock list")
@@ -196,18 +198,18 @@ def deep_scrape(stocklist):
         print(f"Thread {len(threads)} Starting")
         threads[-1].start()
 
-        if stock == stocklist[-1]:
+        if stock == stock_data[-1]:
             for thread in threads:
                 thread.join()
                 print(f"Thread {threads.index(thread) + 1} Joined")
 
 
 if __name__ == "__main__":
-    global db_handler
-    db_handler = DatabaseHandler("win")
+    global user
+    user = DatabaseHandler.User("my_win")
 
-    stocklist = ["TSLA"]
+    stock_list = ["TSLA"]
 
-    deep_scrape(stocklist)
+    deep_scrape(stock_list)
 
     print("DONE!!")

@@ -22,10 +22,10 @@ class StockHist(object):
 
 def get_hist(symbol, date_range):
     # get reddit history #
-    cnx = db_handler.connect_to_db("TheSpatula")
+    cnx = DatabaseHandler.connect_to_db("TheSpatula")
     mycursor = cnx.cursor()
     assert mycursor
-    assert db_handler.table_exists(mycursor, "reddit")
+    assert DatabaseHandler(mycursor, "reddit")
 
     mycursor.execute(f"""
         SELECT num_votes, num_comments, date_posted
@@ -53,10 +53,10 @@ def get_hist(symbol, date_range):
     r_dict = collections.OrderedDict(sorted(r_dict.items()))
 
     # get youtube history #
-    cnx = db_handler.connect_to_db("TheSpatula")
+    cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
     mycursor = cnx.cursor()
     assert mycursor
-    assert db_handler.table_exists(mycursor, "youtube")
+    assert DatabaseHandler.table_exists(mycursor, "youtube")
 
     mycursor.execute(f"""
         SELECT num_views, date_posted
@@ -109,8 +109,8 @@ def plot_hist(symbol, date_range, chart_reddit, chart_youtube):
 
 
 if __name__ == "__main__":
-    global db_handler
-    db_handler = DatabaseHandler("my_win")
+    global user
+    user = DatabaseHandler.User("my_win")
 
     date_range = ("2021-08-01", "2021-08-10")
 

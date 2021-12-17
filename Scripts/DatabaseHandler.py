@@ -3,7 +3,29 @@ import sys
 import json
 
 
-class DatabaseHandler(object):
+def table_exists(cursor, tbl_name):
+    cursor.execute(f"""
+        SELECT COUNT(*)
+        FROM information_schema.tables
+        WHERE table_schema = DATABASE()
+        AND table_name = '{tbl_name}';
+    """)
+
+    return cursor.fetchone()[0] == 1
+
+
+# returns connection object
+def connect_to_db(user, db_name):
+    cnx = mysql.connector.connect(
+        user=user.db_user,
+        password=user.db_password,
+        host=user.db_host,
+        database=db_name
+    )
+    return cnx
+
+
+class User(object):
 
     # Configures parameters by machine (Matthew's 'my_mac' or 'my_win')
     def __init__(self, machine):
@@ -25,26 +47,3 @@ class DatabaseHandler(object):
 
         else:
             sys.exit(f"Machine \"{machine}\" not recognized")
-
-    # returns connection object
-    def connect_to_db(self, db_name):
-        cnx = mysql.connector.connect(
-            user=self.db_user,
-            password=self.db_password,
-            host=self.db_host,
-            database=self.db_name
-        )
-        return cnx
-
-    # returns boolean
-    def table_exists(cursor, tbl_name):
-        cursor.execute("""
-            SELECT COUNT(*)
-            FROM information_schema.tables
-            WHERE table_schema = DATABASE()
-            AND table_name = \"""" + tbl_name + """\";
-        """)
-
-        if cursor.fetchone()[0] == 1:
-            return True
-        return False

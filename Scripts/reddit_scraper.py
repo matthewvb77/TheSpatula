@@ -117,7 +117,7 @@ class SubredditScraper:
         cnx = db_handler.connect_to_db("TheSpatula")
         mycursor = cnx.cursor()
         assert mycursor
-        assert db_handler.table_exists(mycursor, "reddit")
+        assert DatabaseHandler.table_exists(mycursor, "reddit")
 
         for x in tqdm(range(len(relevant_posts)), desc="[2/2] Updating Database", leave=False):
             post = relevant_posts[x]
