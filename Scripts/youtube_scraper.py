@@ -1,49 +1,15 @@
-import json
-import sys
 import threading
 import time
 from datetime import datetime
 from datetime import timedelta
 
-import mysql.connector
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from tqdm import tqdm
 
-# GLOBAL VARIABLES
-path = str()
-db_user = str()
-db_host = str()
-db_password = str()
-
-
-# Sets parameters according to machine #
-def config(machine):
-    global path
-    global db_user
-    global db_host
-    global db_password
-
-    if machine == 'mac':
-        path = '/opt/homebrew/bin/chromedriver'
-        with open('mac_creds.json') as f:
-            data = json.load(f)
-            db_host = data['hostW']
-            db_user = data['user']
-            db_password = data['password']
-
-    elif machine == 'win':
-        path = 'C:/WebDriver/chromedriver'
-        db_user = 'root'
-        db_host = 'localhost'
-        with open('win_creds.json') as f:
-            data = json.load(f)
-            db_password = data['password']
-
-    else:
-        sys.exit(f"Machine \"{machine}\" not recognized")
+import DatabaseHandler
 
 
 class StockVid(object):
@@ -55,41 +21,11 @@ class StockVid(object):
     def json_enc(self):
         return {'stock': self.stock, 'date': self.date, 'views': self.views}
 
-
 def json_def_encoder(obj):
     if hasattr(obj, 'json_enc'):
         return obj.json_enc()
     else:  # some default behavior
         return obj.__dict__
-
-
-# DATABASE FUNCTIONS #
-
-# returns connection object #
-def connect_to_db(db_name):
-    cnx = mysql.connector.connect(
-        user='root',
-        password='chalkHorseMountain',
-        host='localhost',
-        database=db_name
-    )
-    return cnx
-
-    # returns boolean #
-
-
-def table_exists(cursor, tbl_name):
-    cursor.execute(f"""
-        SELECT COUNT(*)
-        FROM information_schema.tables
-        WHERE table_schema = DATABASE()
-        AND table_name = "{tbl_name}";
-    """)
-
-    if cursor.fetchone()[0] == 1:
-        return True
-    return False
-
 
 def get_date(post):
     today = datetime.today()
@@ -173,7 +109,7 @@ class YoutubeScraper:
         options = Options()
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(path, options=options)
+        driver = webdriver.Chrome(db_handler.path, options=options)
         driver.get("https://www.youtube.com/results?search_query=" + stock)
 
         actions = ActionChains(driver)
@@ -227,10 +163,10 @@ class YoutubeScraper:
 
         # Updating Database #
 
-        cnx = connect_to_db("TheSpatula")
+        cnx = db_handler.connect_to_db("TheSpatula")
         mycursor = cnx.cursor()
         assert mycursor
-        assert table_exists(mycursor, "youtube")
+        assert db_handler.table_exists(mycursor, "youtube")
 
         for x in tqdm(range(len(relevant_posts)), desc="[3/3] Updating Database"):
             post = relevant_posts[x]
@@ -267,7 +203,8 @@ def deep_scrape(stocklist):
 
 
 if __name__ == "__main__":
-    config("win")
+    global db_handler
+    db_handler = DatabaseHandler("win")
 
     stocklist = ["TSLA"]
 

@@ -7,46 +7,12 @@ import mysql.connector
 import traceback
 import sys
 import threading
+import DatabaseHandler
 
 from datetime import datetime
 from dateutil import tz
 
 from tqdm import tqdm
-
-# GLOBAL VARIABLES
-path = str()
-db_user = str()
-db_host = str()
-db_password = str()
-
-
-# Sets parameters according to machine #
-def config(machine):
-    global path
-    global db_user
-    global db_host
-    global db_password
-    # global semap
-    # semap = threading.Semaphore(1)
-
-    if machine == 'mac':
-        path = '/opt/homebrew/bin/chromedriver'
-        with open("mac_creds.json") as f:
-            data = json.load(f)
-            db_host = data["hostW"]
-            db_user = data["user"]
-            db_password = data["password"]
-
-    elif machine == 'win':
-        path = 'C:/WebDriver/chromedriver'
-        db_user = 'root'
-        db_host = 'localhost'
-        with open('win_creds.json') as f:
-            data = json.load(f)
-            db_password = data['password']
-
-    else:
-        sys.exit(f"Machine \"{machine}\" not recognized")
 
 
 class StockPost(object):
@@ -69,34 +35,6 @@ def json_def_encoder(obj):
         return obj.json_enc()
     else:  # some default behavior
         return obj.__dict__
-
-
-# DATABASE FUNCTIONS #
-
-# returns connection object #
-def connect_to_db(db_name):
-    cnx = mysql.connector.connect(
-        user=db_user,
-        password=db_password,
-        host=db_host,
-        database=db_name
-    )
-    return cnx
-
-    # returns boolean #
-
-
-def table_exists(cursor, tbl_name):
-    cursor.execute("""
-        SELECT COUNT(*)
-        FROM information_schema.tables
-        WHERE table_schema = DATABASE()
-        AND table_name = \"""" + tbl_name + """\";
-    """)
-
-    if cursor.fetchone()[0] == 1:
-        return True
-    return False
 
 
 class SubredditScraper:
@@ -162,7 +100,7 @@ class SubredditScraper:
                         if (re.search(r"\s+\$?" + stock + r"\$?\s+", post.selftext) or re.search(
                                 r"\s+\$?" + stock + r"\$?\s+", post.title)):
                             stock_tickers[stock][post.id] = StockPost(post.id, post.permalink, post.ups, post.downs,
-                                                                     post.num_comments, stock, post.created_utc)
+                                                                      post.num_comments, stock, post.created_utc)
                     except:
                         print(f"This Ticker threw an exception: {stock}")
                         traceback.print_exc()
@@ -174,13 +112,12 @@ class SubredditScraper:
                     # semap.acquire()
         # json_object = json.dumps(relevant_posts, default=json_def_encoder, indent = 4)
         # print(json_object)
-        # semap.release()
 
         # Upload data to db #
-        cnx = connect_to_db("TheSpatula")
+        cnx = db_handler.connect_to_db("TheSpatula")
         mycursor = cnx.cursor()
         assert mycursor
-        assert table_exists(mycursor, "reddit")
+        assert db_handler.table_exists(mycursor, "reddit")
 
         for x in tqdm(range(len(relevant_posts)), desc="[2/2] Updating Database", leave=False):
             post = relevant_posts[x]
@@ -242,7 +179,9 @@ def deep_scrape(stocklist, sublist):
 
 
 if __name__ == '__main__':
-    config("win")
+    # config by machine
+    global db_handler
+    db_handler = DatabaseHandler("win")
 
     # stocklist options:
     #    ["stocks"]         //all stocks on NYSE and Nasdaq

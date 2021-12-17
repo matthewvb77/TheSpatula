@@ -12,18 +12,7 @@ from tqdm import tqdm
 
 import sys
 
-# GLOBAL VARIABLES
-path = str()
-
-
-def config(machine):
-    global path
-    if (machine == "mac"):
-        path = "/opt/homebrew/bin/chromedriver"
-    elif (machine == "win"):
-        path = "C:/WebDriver/chromedriver"
-    else:
-        sys.exit(f"Machine \"{machine}\" not recognized")
+import DatabaseHandler
 
 
 class Gatherers:
@@ -35,7 +24,7 @@ class Gatherers:
         options = Options()
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(path, options=options)
+        driver = webdriver.Chrome(db_handler.path, options=options)
         wait = WebDriverWait(driver, 20)
 
         driver.get("https://ca.investing.com/crypto/currencies")
@@ -74,7 +63,8 @@ class Gatherers:
 
 
 if __name__ == "__main__":
-    config("win")
+    global db_handler
+    db_handler = DatabaseHandler("my_win")
 
     Gatherers.get_cryptos(None)
 

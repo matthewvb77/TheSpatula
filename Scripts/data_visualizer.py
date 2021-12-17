@@ -5,68 +5,11 @@ import sys
 import mysql.connector
 from matplotlib import pyplot as plt
 
-# GLOBAL VARIABLES
-path = str()
-db_user = str()
-db_host = str()
-db_password = str()
+import DatabaseHandler
 
 
-# Sets parameters according to machine #
-def config(machine):
-    global path
-    global db_user
-    global db_host
-    global db_password
-
-    if machine == 'mac':
-        path = '/opt/homebrew/bin/chromedriver'
-        with open('mac_creds.json') as f:
-            data = json.load(f)
-            db_host = data["hostW"]
-            db_user = data["user"]
-            db_password = data["password"]
-
-    elif machine == 'win':
-        path = 'C:/WebDriver/chromedriver'
-        db_user = 'root'
-        db_host = 'localhost'
-        with open('win_creds.json') as f:
-            data = json.load(f)
-            db_password = data["password"]
-
-    else:
-        sys.exit(f"Machine \"{machine}\" not recognized")
-
-
-# returns connection object #
-def connect_to_db(db_name):
-    cnx = mysql.connector.connect(
-        user=db_user,
-        password=db_password,
-        host=db_host,
-        database=db_name
-    )
-    return cnx
-
-
-# returns boolean #
-def table_exists(cursor, tbl_name):
-    cursor.execute("""
-        SELECT COUNT(*)
-        FROM information_schema.tables
-        WHERE table_schema = DATABASE()
-        AND table_name = \"""" + tbl_name + """\";
-    """)
-
-    if cursor.fetchone()[0] == 1:
-        return True
-    return False
-
-    # 'r_' indicates reddit attribute
-    # 'y_' indicates youtube attribute
-
-
+# 'r_' indicates reddit attribute
+# 'y_' indicates youtube attribute
 class StockHist(object):
     def __init__(self, symbol, r_votes, r_comments, r_dates, y_views, y_dates):
         self.symbol = symbol
@@ -79,10 +22,10 @@ class StockHist(object):
 
 def get_hist(symbol, date_range):
     # get reddit history #
-    cnx = connect_to_db("TheSpatula")
+    cnx = db_handler.connect_to_db("TheSpatula")
     mycursor = cnx.cursor()
     assert mycursor
-    assert table_exists(mycursor, "reddit")
+    assert db_handler.table_exists(mycursor, "reddit")
 
     mycursor.execute(f"""
         SELECT num_votes, num_comments, date_posted
@@ -110,10 +53,10 @@ def get_hist(symbol, date_range):
     r_dict = collections.OrderedDict(sorted(r_dict.items()))
 
     # get youtube history #
-    cnx = connect_to_db("TheSpatula")
+    cnx = db_handler.connect_to_db("TheSpatula")
     mycursor = cnx.cursor()
     assert mycursor
-    assert table_exists(mycursor, "youtube")
+    assert db_handler.table_exists(mycursor, "youtube")
 
     mycursor.execute(f"""
         SELECT num_views, date_posted
@@ -166,7 +109,8 @@ def plot_hist(symbol, date_range, chart_reddit, chart_youtube):
 
 
 if __name__ == "__main__":
-    config("win")
+    global db_handler
+    db_handler = DatabaseHandler("my_win")
 
     date_range = ("2021-08-01", "2021-08-10")
 
