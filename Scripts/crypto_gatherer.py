@@ -8,16 +8,19 @@ from tqdm import tqdm
 
 import DatabaseHandler
 
+# GLOBAL VARIABLES
+driver = None
 
-def get_cryptos():
-    print("[1/2] Opening Headless Browser...")
 
-    # Use Headless browser
+def get_driver():
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--disable-gpu')
-    driver = webdriver.Chrome(user.path, options=options)
-    wait = WebDriverWait(driver, 20)
+    return webdriver.Chrome(user.path, options=options)
+
+
+def get_entries():
+    # Use Headless browser
 
     driver.get("https://ca.investing.com/crypto/currencies")
 
@@ -27,25 +30,33 @@ def get_cryptos():
     num_rows = int(num_rows.replace(',', ''))
 
     wait.until(EC.visibility_of_element_located((By.XPATH, "//table/tbody/tr[" + str(num_rows - 1) + "]")))
-    rows = driver.find_elements_by_xpath("//html/body/div[5]/section/div[10]/table/tbody/tr")
 
+    return driver.find_elements_by_xpath("//html/body/div[5]/section/div[10]/table/tbody/tr")
+
+
+def add_symbols(entries):
     cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
     mycursor = cnx.cursor()
     assert mycursor
     assert DatabaseHandler.table_exists(mycursor, "crypto_symbols")
 
-    for i in tqdm(range(num_rows), desc='[2/2] Scraping Rows'):
-        symbol = rows[i].find_element_by_xpath(".//td[4]").text
+    for i in tqdm(range(len(entries)), desc='[2/2] Scraping Rows'):
+        symbol = entries[i].find_element_by_xpath(".//td[4]").text
         mycursor.execute(f"""INSERT IGNORE INTO crypto_symbols (symbol) VALUES("{symbol}");""")
         if i % 100 == 0:
             cnx.commit()
     cnx.commit()
 
-    driver.close()
-
 
 if __name__ == "__main__":
+    # Setup
     user = DatabaseHandler.User("my_win")
-    get_cryptos()
+    driver = get_driver()
+    wait = WebDriverWait(driver, 20)
 
+    # Action
+    rows = get_entries()
+    add_symbols(rows)
+
+    driver.close()
     print("DONE!!")
