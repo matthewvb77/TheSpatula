@@ -14,7 +14,7 @@ import DatabaseHandler
 
 
 def get_cryptos():
-    print("[1/3] Opening Headless Browser...")
+    print("[1/2] Opening Headless Browser...")
 
     # Use Headless browser
     options = Options()
@@ -25,6 +25,7 @@ def get_cryptos():
 
     driver.get("https://ca.investing.com/crypto/currencies")
 
+    """ NOT NECESSARY WHEN HEADLESS
     print("[2/3] Waiting for Popup...")
     # close popup if it appears
     try:
@@ -34,6 +35,7 @@ def get_cryptos():
     except:
         print("popup not found")
         pass
+    """
 
     # Wait for all rows to load
     num_rows = driver.find_element_by_xpath(
@@ -44,7 +46,7 @@ def get_cryptos():
     rows = driver.find_elements_by_xpath("//html/body/div[5]/section/div[10]/table/tbody/tr")
 
     with codecs.open("./../Tickers/tickers_crypto.csv", "w", encoding='utf-8') as f:
-        for i in tqdm(range(num_rows), desc='[3/3] Scraping Rows'):
+        for i in tqdm(range(num_rows), desc='[2/2] Scraping Rows'):
             try:
                 symbol = str(rows[i].find_element_by_xpath(".//td[4]").text)
                 f.write(f"{symbol}\n")
