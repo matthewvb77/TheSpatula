@@ -24,7 +24,7 @@ class Gatherers:
         options = Options()
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(db_handler.path, options=options)
+        driver = webdriver.Chrome(user.path, options=options)
         wait = WebDriverWait(driver, 20)
 
         driver.get("https://ca.investing.com/crypto/currencies")
@@ -50,7 +50,6 @@ class Gatherers:
 
         with open("./../Tickers/tickers_crypto.csv", "w") as f:
             for i in tqdm(range(len(rows)), desc='[3/3] Scraping Rows'):
-                # print(i)
                 try:
                     symbol = rows[i].find_element_by_xpath(
                         ".//td[contains(@class, 'js-currency-symbol')]").get_attribute("title")
@@ -63,8 +62,8 @@ class Gatherers:
 
 
 if __name__ == "__main__":
-    global db_handler
-    db_handler = DatabaseHandler("my_win")
+    global user
+    user = DatabaseHandler.User("my_win")
 
     Gatherers.get_cryptos(None)
 
