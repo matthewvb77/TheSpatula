@@ -4,11 +4,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
-import time
 import threading
 import constant
 
-import DatabaseHandler
+from Scripts import DatabaseHandler
 
 
 def get_driver():
@@ -50,8 +49,6 @@ def add_symbols(entries):
 
 
 if __name__ == "__main__":
-    begin_time = time.time()
-
     # Setup
     user = DatabaseHandler.User("my_win")
     driver = get_driver()
@@ -77,6 +74,3 @@ if __name__ == "__main__":
         thread.join(timeout=constant.SECONDS_IN_DAY)
 
     driver.close()
-
-    end_time = time.time()
-    print(f"Total Runtime: {end_time - begin_time}")

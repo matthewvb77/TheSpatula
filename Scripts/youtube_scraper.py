@@ -101,87 +101,85 @@ def get_views(post):
     return num_views
 
 
-class YoutubeScraper:
+def get_vids(stock):
 
-    def get_vids(self, stock):
+    stock_tickers = {stock: {}}
+    relevant_posts = []
 
-        stock_tickers = {stock: {}}
-        relevant_posts = []
+    # Use Headless browser
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    driver = webdriver.Chrome(user.path, options=options)
+    driver.get("https://www.youtube.com/results?search_query=" + stock)
 
-        # Use Headless browser
-        options = Options()
-        options.add_argument('--headless')
-        options.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(user.path, options=options)
-        driver.get("https://www.youtube.com/results?search_query=" + stock)
+    actions = ActionChains(driver)
 
-        actions = ActionChains(driver)
+    # Begin Scrolling #
+    start = time.perf_counter()
+    print("[1/3] Scrolling To Bottom", end=' ')
 
-        # Begin Scrolling #
-        start = time.perf_counter()
-        print("[1/3] Scrolling To Bottom", end=' ')
-
-        while True:
-            try:
-                driver.find_element_by_xpath("//*[@id='message'][text()='No more results']")
-                break
-            except:
-                height = driver.execute_script("return document.body.scrollHeight")
-                time.sleep(1)
-                driver.find_element_by_tag_name('body').send_keys(Keys.END)
-                continue
-
+    while True:
+        try:
+            driver.find_element_by_xpath("//*[@id='message'][text()='No more results']")
             break
+        except:
+            height = driver.execute_script("return document.body.scrollHeight")
+            time.sleep(1)
+            driver.find_element_by_tag_name('body').send_keys(Keys.END)
+            continue
 
-        end = time.perf_counter()
-        p1_time = divmod(int(end - start), 60)
-        print("[{:02}:{:02}]".format(p1_time[0], p1_time[1]))
+        break
 
-        # Begin Scraping #
+    end = time.perf_counter()
+    p1_time = divmod(int(end - start), 60)
+    print("[{:02}:{:02}]".format(p1_time[0], p1_time[1]))
 
-        all_posts = driver.find_elements_by_xpath("//div[@ID='contents']/ytd-video-renderer")
+    # Begin Scraping #
 
-        for i in tqdm(range(len(all_posts)), desc=f'[2/3] Scraping {stock} Vids'):
-            post = all_posts[i]
+    all_posts = driver.find_elements_by_xpath("//div[@ID='contents']/ytd-video-renderer")
 
-            url = post.find_element_by_xpath(".//*[@id='video-title']").get_attribute("href")
-            # The last 11 chars of the url is the unique key
-            post_id = url[-11:]
-            num_views = get_views(post)
+    for i in tqdm(range(len(all_posts)), desc=f'[2/3] Scraping {stock} Vids'):
+        post = all_posts[i]
 
-            if num_views is None:  # number of views was not listed (ex. TV show that you need to buy)
-                continue
-            post_date = get_date(post)
+        url = post.find_element_by_xpath(".//*[@id='video-title']").get_attribute("href")
+        # The last 11 chars of the url is the unique key
+        post_id = url[-11:]
+        num_views = get_views(post)
 
-            stock_tickers[stock][i] = StockVid(post_id, post_date, num_views)
+        if num_views is None:  # number of views was not listed (ex. TV show that you need to buy)
+            continue
+        post_date = get_date(post)
 
-        driver.close()
+        stock_tickers[stock][i] = StockVid(post_id, post_date, num_views)
 
-        # Begin Formatting Results #
-        if len(stock_tickers[stock]) > 0:
-            for post in stock_tickers[stock]:
-                relevant_posts.append(stock_tickers[stock][post])
-        # json_object = json.dumps(relevant_posts, default=json_def_encoder, indent = 4)
-        # print(json_object)
+    driver.close()
 
-        # Updating Database #
+    # Begin Formatting Results #
+    if len(stock_tickers[stock]) > 0:
+        for post in stock_tickers[stock]:
+            relevant_posts.append(stock_tickers[stock][post])
+    # json_object = json.dumps(relevant_posts, default=json_def_encoder, indent = 4)
+    # print(json_object)
 
-        cnx = db_handler.connect_to_db(user, "TheSpatula")
-        my_cursor = cnx.cursor()
-        assert my_cursor
-        assert table_exists(my_cursor, "youtube")
+    # Updating Database #
 
-        for x in tqdm(range(len(relevant_posts)), desc="[3/3] Updating Database"):
-            post = relevant_posts[x]
+    cnx = db_handler.connect_to_db(user, "TheSpatula")
+    my_cursor = cnx.cursor()
+    assert my_cursor
+    assert table_exists(my_cursor, "youtube")
 
-            # Add post, if it exists already, update post #
-            my_cursor.execute(f"""
-            INSERT INTO youtube (post_id, symbol, num_views, date_posted) 
-            VALUES("{post.post_id}", "{stock}", {post.views}, "{post.date}")
-            ON DUPLICATE KEY UPDATE num_views={post.views}
-            ;""")
+    for x in tqdm(range(len(relevant_posts)), desc="[3/3] Updating Database"):
+        post = relevant_posts[x]
 
-            cnx.commit()
+        # Add post, if it exists already, update post #
+        my_cursor.execute(f"""
+        INSERT INTO youtube (post_id, symbol, num_views, date_posted) 
+        VALUES("{post.post_id}", "{stock}", {post.views}, "{post.date}")
+        ON DUPLICATE KEY UPDATE num_views={post.views}
+        ;""")
+
+        cnx.commit()
 
 
 def deep_scrape(stock_data):
@@ -194,7 +192,7 @@ def deep_scrape(stock_data):
         if stock == "":
             raise Exception(f"Empty string in stock list")
 
-        threads.append(threading.Thread(target=YoutubeScraper().get_vids, args=[stock]))
+        threads.append(threading.Thread(target=get_vids, args=[stock]))
 
         print(f"Thread {len(threads)} Starting")
         threads[-1].start()
