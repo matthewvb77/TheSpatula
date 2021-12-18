@@ -4,15 +4,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
-from tqdm import tqdm
 import time
 import threading
+import constant
 
 import DatabaseHandler
 
 
 def get_driver():
-    print("[1/2] Opening headless browser")
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--disable-gpu')
@@ -66,21 +65,18 @@ if __name__ == "__main__":
     start = 0
     end = 0
     for block_index in range(num_threads - 1):
-        block_length = len(rows)//num_threads
+        block_length = len(rows) // num_threads
         start = block_length * block_index
-        end = block_length * (block_index+1) # end index (non-inclusive)
+        end = block_length * (block_index + 1)  # end index (non-inclusive)
         threads.append(threading.Thread(target=add_symbols, args=[rows[start: end]]))
-    #     print(f"thread[{block_index+1}] -- index range [{start}:{end}]")
-    # print(f"thread[{num_threads}] -- index range [{end}:{len(rows)}]")
-    # final thread does the rest (block_length + rounding errors)
     threads.append(threading.Thread(target=add_symbols, args=[rows[end:]]))
 
     for thread in threads:
         thread.start()
     for thread in threads:
-        thread.join(timeout=20000) ## should be wayyy more than enough
+        thread.join(timeout=constant.SECONDS_IN_DAY)
 
     driver.close()
 
     end_time = time.time()
-    print(f"Total Runtime: {end_time-begin_time}")
+    print(f"Total Runtime: {end_time - begin_time}")

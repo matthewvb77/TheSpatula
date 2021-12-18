@@ -1,5 +1,6 @@
 import threading
 import time
+import constant
 from datetime import datetime
 from datetime import timedelta
 
@@ -200,7 +201,7 @@ def deep_scrape(stock_data):
 
         if stock == stock_data[-1]:
             for thread in threads:
-                thread.join()
+                thread.join(timeout=constant.SECONDS_IN_DAY)
                 print(f"Thread {threads.index(thread) + 1} Joined")
 
 

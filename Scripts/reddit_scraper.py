@@ -2,6 +2,7 @@ import praw
 import csv
 import re
 
+import constant
 import traceback
 import threading
 from Scripts import DatabaseHandler
@@ -172,7 +173,7 @@ def deep_scrape(stocklist, sublist):
 
         if sub == subreddits[-1]:
             for thread in threads:
-                thread.join()
+                thread.join(timeout=constant.SECONDS_IN_DAY)
                 print(f"Thread {threads.index(thread) + 1} Joined")
 
 

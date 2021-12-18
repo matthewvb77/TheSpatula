@@ -1,8 +1,5 @@
 import collections
-import json
-import sys
 
-import mysql.connector
 from matplotlib import pyplot as plt
 
 import DatabaseHandler
@@ -25,7 +22,7 @@ def get_hist(symbol, date_range):
     cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
     mycursor = cnx.cursor()
     assert mycursor
-    assert DatabaseHandler(mycursor, "reddit")
+    assert DatabaseHandler.table_exists(mycursor, "reddit")
 
     mycursor.execute(f"""
         SELECT num_votes, num_comments, date_posted
