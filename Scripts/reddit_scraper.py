@@ -111,6 +111,7 @@ class SubredditScraper:
         # print(json_object)
 
         # Upload data to db #
+        """ NOTE: MySQL connector is NOT thread-safe. Every thread needs it's own instance."""
         cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
         mycursor = cnx.cursor()
         assert mycursor

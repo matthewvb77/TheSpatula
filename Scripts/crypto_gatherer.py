@@ -5,14 +5,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
 from tqdm import tqdm
+import time
+import threading
 
 import DatabaseHandler
 
-# GLOBAL VARIABLES
-driver = None
-
 
 def get_driver():
+    print("[1/2] Opening headless browser")
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--disable-gpu')
@@ -34,13 +34,15 @@ def get_entries():
     return driver.find_elements_by_xpath("//html/body/div[5]/section/div[10]/table/tbody/tr")
 
 
+# Parses list of row entries for symbols
 def add_symbols(entries):
+    """ NOTE: MySQL connector is NOT thread-safe. Every thread needs it's own instance."""
     cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
     mycursor = cnx.cursor()
     assert mycursor
     assert DatabaseHandler.table_exists(mycursor, "crypto_symbols")
 
-    for i in tqdm(range(len(entries)), desc='[2/2] Scraping Rows'):
+    for i in range(len(entries)):
         symbol = entries[i].find_element_by_xpath(".//td[4]").text
         mycursor.execute(f"""INSERT IGNORE INTO crypto_symbols (symbol) VALUES("{symbol}");""")
         if i % 100 == 0:
@@ -49,14 +51,36 @@ def add_symbols(entries):
 
 
 if __name__ == "__main__":
+    begin_time = time.time()
+
     # Setup
     user = DatabaseHandler.User("my_win")
     driver = get_driver()
     wait = WebDriverWait(driver, 20)
+    num_threads = 8
+    threads = []
 
     # Action
     rows = get_entries()
-    add_symbols(rows)
+
+    start = 0
+    end = 0
+    for block_index in range(num_threads - 1):
+        block_length = len(rows)//num_threads
+        start = block_length * block_index
+        end = block_length * (block_index+1) # end index (non-inclusive)
+        threads.append(threading.Thread(target=add_symbols, args=[rows[start: end]]))
+    #     print(f"thread[{block_index+1}] -- index range [{start}:{end}]")
+    # print(f"thread[{num_threads}] -- index range [{end}:{len(rows)}]")
+    # final thread does the rest (block_length + rounding errors)
+    threads.append(threading.Thread(target=add_symbols, args=[rows[end:]]))
+
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=20000) ## should be wayyy more than enough
 
     driver.close()
-    print("DONE!!")
+
+    end_time = time.time()
+    print(f"Total Runtime: {end_time-begin_time}")
