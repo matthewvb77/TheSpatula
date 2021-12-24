@@ -34,7 +34,7 @@ def get_hist(symbol, date_range):
         """)
 
     r_dict = collections.OrderedDict()
-    # r_dict = {"date":[votes, comments]} #
+    # r_dict = {"date":[votes, comments]}
 
     for (num_votes, num_comments, date_posted) in mycursor:
         if date_posted in r_dict.keys():
@@ -87,8 +87,8 @@ def get_hist(symbol, date_range):
     return StockHist(symbol, r_votes, r_comments, r_dates, y_views, y_dates)
 
 
-def plot_hist(symbol, date_range, chart_reddit, chart_youtube):
-    hist = get_hist(symbol, date_range)
+def plot_hist(symbol, data_date_range, chart_reddit, chart_youtube):
+    hist = get_hist(symbol, data_date_range)
 
     if chart_reddit:
         plt.plot(hist.r_dates, hist.r_votes, marker='o')
@@ -108,6 +108,6 @@ def plot_hist(symbol, date_range, chart_reddit, chart_youtube):
 if __name__ == "__main__":
     user = DatabaseHandler.User("my_win")
 
-    date_range = ("2021-08-01", "2021-08-10")
+    timeframe = ("2021-08-01", "2021-08-10")
 
-    plot_hist("TSLA", date_range, chart_reddit=True, chart_youtube=False)
+    plot_hist("TSLA", timeframe, chart_reddit=True, chart_youtube=False)
