@@ -59,24 +59,24 @@ class SubredditScraper:
             print('Sort method was not recognized, defaulting to hot.')
             return self.sort, self.reddit.subreddit(self.sub).hot(limit=self.lim)
 
-    def get_posts(self, stocklist):
+    def get_posts(self, stock_list):
 
         stock_tickers = {}
 
-        if stocklist == ["stocks"]:
+        if stock_list == ["stocks"]:
             with open('./../Tickers/tickers_stocks.csv', mode='r') as infile:
                 reader = csv.reader(infile)
                 for row in reader:
                     stock_tickers[row[0].split(',')[0]] = {}
 
-        elif stocklist == ["crypto"]:
+        elif stock_list == ["crypto"]:
             with open('./../Tickers/tickers_crypto.csv', mode='r') as infile:
                 reader = csv.reader(infile)
                 for row in reader:
                     stock_tickers[row[0].split(',')[0]] = {}
 
         else:
-            for ticker in stocklist:
+            for ticker in stock_list:
                 stock_tickers[ticker] = {}
 
         """Get unique posts from a specified subreddit."""
@@ -185,16 +185,16 @@ if __name__ == '__main__':
     #    ["stocks"]         //all stocks on NYSE and Nasdaq
     #    ["crypto"]         //all crypto
     #    ["abc", "def"]     //custom
-    stocklist = ["crypto"]
+    symbols = ["crypto"]
 
     # sublist options:
     #    ["all"]         //crypto and stock subs
     #    ["stocks"]      //stock subs
     #    ["crypto"]      //crypto subs
     #    ["abc", "def"]  //custom
-    sublist = ["wallstreetbets"]
+    subs = ["wallstreetbets"]
 
-    deep_scrape(stocklist, sublist)
+    deep_scrape(symbols, subs)
     # SubredditScraper('wallstreetbets', lim=20, sort='hot').get_posts(stocklist)
 
     print("DONE!!")
