@@ -70,10 +70,14 @@ class SubredditScraper:
                     stock_tickers[row[0].split(',')[0]] = {}
 
         elif stock_list == ["crypto"]:
-            with open('./../Tickers/tickers_crypto.csv', mode='r') as infile:
-                reader = csv.reader(infile)
-                for row in reader:
-                    stock_tickers[row[0].split(',')[0]] = {}
+            cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
+            mycursor = cnx.cursor()
+            assert mycursor
+            assert DatabaseHandler.table_exists(mycursor, "crypto_symbols")
+            mycursor.execute(f"""SELECT symbol FROM crypto_symbols;""")
+            for row in mycursor:
+                # mycursor SELECT always returns a tuple
+                stock_tickers[row[0]] = {}
 
         else:
             for ticker in stock_list:
@@ -116,7 +120,7 @@ class SubredditScraper:
         cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
         mycursor = cnx.cursor()
         assert mycursor
-        assert DatabaseHandler.table_exists(mycursor, "reddit")
+        assert DatabaseHandler.table_exists(mycursor, "test_db")
 
         for x in tqdm(range(len(relevant_posts)), desc="[2/2] Updating Database", leave=False):
             post = relevant_posts[x]
@@ -133,7 +137,7 @@ class SubredditScraper:
 
             # Add post, if it exists already, update post #
             mycursor.execute(f"""
-            INSERT INTO reddit (post_id, symbol, num_comments, num_votes, date_posted) 
+            INSERT INTO test_db (post_id, symbol, num_comments, num_votes, date_posted) 
             VALUES("{post.postID}", "{post.stock}", {post.numComments}, {num_votes}, "{date_posted}")
             ON DUPLICATE KEY UPDATE num_comments={post.numComments}, num_votes={num_votes}, date_posted="{date_posted}"
             ;""")
@@ -156,9 +160,9 @@ def deep_scrape(stocklist, sublist):
     else:
         subreddits = sublist
 
-        threads = []
     for x in tqdm(range(len(subreddits)), desc="DEEP SCRAPE"):
         sub = subreddits[x]
+        threads = list()
 
         threads.append(
             threading.Thread(target=SubredditScraper(sub, lim=10000, sort='new').get_posts, args=[stocklist]))
@@ -194,7 +198,7 @@ if __name__ == '__main__':
     #    ["abc", "def"]  //custom
     subs = ["wallstreetbets"]
 
-    deep_scrape(symbols, subs)
-    # SubredditScraper('wallstreetbets', lim=20, sort='hot').get_posts(stocklist)
+    # deep_scrape(symbols, subs)
+    SubredditScraper('wallstreetbets', lim=20, sort='hot').get_posts(symbols)
 
     print("DONE!!")
