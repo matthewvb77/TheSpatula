@@ -3,8 +3,8 @@ import csv
 import re
 
 import constant
-import traceback
-import threading
+from concurrent.futures import ThreadPoolExecutor
+import time
 from Scripts import DatabaseHandler
 
 from datetime import datetime
@@ -133,7 +133,7 @@ class SubredditScraper:
 
             # Add post, if it exists already, update post #
             mycursor.execute(f"""
-            INSERT INTO reddit (post_id, symbol, num_comments, num_votes, date_posted) 
+            INSERT INTO test_db (post_id, symbol, num_comments, num_votes, date_posted) 
             VALUES("{post.postID}", "{post.stock}", {post.numComments}, {num_votes}, "{date_posted}")
             ON DUPLICATE KEY UPDATE num_comments={post.numComments}, num_votes={num_votes}, date_posted="{date_posted}"
             ;""")
@@ -156,25 +156,22 @@ def deep_scrape(stocklist, sublist):
     else:
         subreddits = sublist
 
+    executor = ThreadPoolExecutor(max_workers=12)
+    threads = list()
     for x in tqdm(range(len(subreddits)), desc="DEEP SCRAPE"):
         sub = subreddits[x]
-        threads = list()
 
         threads.append(
-            threading.Thread(target=SubredditScraper(sub, lim=10000, sort='new').get_posts, args=[stocklist]))
+            executor.submit(SubredditScraper(sub, lim=100, sort='new').get_posts, stocklist))
         threads.append(
-            threading.Thread(target=SubredditScraper(sub, lim=10000, sort='hot').get_posts, args=[stocklist]))
+            executor.submit(SubredditScraper(sub, lim=100, sort='hot').get_posts, stocklist))
         threads.append(
-            threading.Thread(target=SubredditScraper(sub, lim=10000, sort='top').get_posts, args=[stocklist]))
+            executor.submit(SubredditScraper(sub, lim=100, sort='top').get_posts, stocklist))
+        print(f"Starting threads: {(x*3)+1}-{(x*3)+3}")
 
-        for thread in threads[-3:]:
-            print(f"Thread {threads.index(thread) + 1} Starting")
-            thread.start()
-
-        if sub == subreddits[-1]:
-            for thread in threads:
-                thread.join(timeout=constant.SECONDS_IN_DAY)
-                print(f"Thread {threads.index(thread) + 1} Joined")
+    for thread in threads:
+        thread.result(timeout=constant.SECONDS_IN_DAY)
+        print(f"Thread {threads.index(thread) + 1} Joined")
 
 
 if __name__ == '__main__':
@@ -194,7 +191,9 @@ if __name__ == '__main__':
     #    ["abc", "def"]  //custom
     subs = ["wallstreetbets"]
 
+    start_time = time.time()
     deep_scrape(symbols, subs)
+    end_time = time.time()
     # SubredditScraper('wallstreetbets', lim=200, sort='hot').get_posts(symbols)
 
-    print("DONE!!")
+    print(f"DONE!! ------ time: {end_time-start_time} seconds")
