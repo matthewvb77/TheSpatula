@@ -10,8 +10,6 @@ from Scripts import DatabaseHandler
 from datetime import datetime
 from dateutil import tz
 
-from tqdm import tqdm
-
 
 class StockPost(object):
     def __init__(self, postID, postURL, ups, downs, numComments, stock, date):
@@ -94,7 +92,7 @@ class SubredditScraper:
         relevant_posts = []
         subreddit = list(subreddit)
 
-        for i in tqdm(range(len(subreddit)), desc="[1/2] Scraping Posts", leave=False):
+        for i in range(len(subreddit)):
             post = subreddit[i]
             if post.link_flair_text != 'Meme':
                 for stock in stock_tickers.keys():
@@ -118,7 +116,7 @@ class SubredditScraper:
         assert mycursor
         assert DatabaseHandler.table_exists(mycursor, "reddit")
 
-        for x in tqdm(range(len(relevant_posts)), desc="[2/2] Updating Database", leave=False):
+        for x in range(len(relevant_posts)):
             post = relevant_posts[x]
             num_votes = post.ups + post.downs
 
@@ -129,7 +127,7 @@ class SubredditScraper:
             to_zone = tz.tzlocal()
             utc = datetime.strptime(utc, '%Y-%m-%d %H:%M:%S')
             utc = utc.replace(tzinfo=from_zone)
-            date_posted = utc.astimezone(to_zone).date()
+            date_posted = utc.astimezone(to_zone)
 
             # Add post, if it exists already, update post #
             mycursor.execute(f"""
@@ -142,7 +140,7 @@ class SubredditScraper:
 
 
 # get_posts() every subreddit with 10000 post limit #
-def deep_scrape(stocklist, sublist):
+def deep_scrape(stocklist, sublist, num_workers, max_posts):
     if sublist == ["all"]:
         subreddits = ["CryptoCurrency", "CryptoMoonShots", "CryptoMarkets", "Crypto_com", "wallstreetbets",
                       "Wallstreetbetsnew", "stocks", "RobinHoodPennyStocks", "pennystocks", "weedstocks", "trakstocks",
@@ -156,17 +154,17 @@ def deep_scrape(stocklist, sublist):
     else:
         subreddits = sublist
 
-    executor = ThreadPoolExecutor(max_workers=12)
+    executor = ThreadPoolExecutor(max_workers=num_workers)
     threads = list()
-    for x in tqdm(range(len(subreddits)), desc="DEEP SCRAPE"):
+    for x in range(len(subreddits)):
         sub = subreddits[x]
 
         threads.append(
-            executor.submit(SubredditScraper(sub, lim=100, sort='new').get_posts, stocklist))
+            executor.submit(SubredditScraper(sub, lim=max_posts, sort='new').get_posts, stocklist))
         threads.append(
-            executor.submit(SubredditScraper(sub, lim=100, sort='hot').get_posts, stocklist))
+            executor.submit(SubredditScraper(sub, lim=max_posts, sort='hot').get_posts, stocklist))
         threads.append(
-            executor.submit(SubredditScraper(sub, lim=100, sort='top').get_posts, stocklist))
+            executor.submit(SubredditScraper(sub, lim=max_posts, sort='top').get_posts, stocklist))
         print(f"Starting threads: {(x*3)+1}-{(x*3)+3}")
 
     for thread in threads:
@@ -175,14 +173,16 @@ def deep_scrape(stocklist, sublist):
 
 
 if __name__ == '__main__':
-    # config by machine
+    # CONFIG #
     user = DatabaseHandler.User("my_win")
+    num_threads = 12
+    num_posts = 100
 
     # stocklist options:
     #    ["stocks"]         //all stocks on NYSE and Nasdaq
     #    ["crypto"]         //all crypto
     #    ["abc", "def"]     //custom
-    symbols = ["crypto"]
+    symbols = ["TSLA", "GOOG", "PLTR"]
 
     # sublist options:
     #    ["all"]         //crypto and stock subs
@@ -190,10 +190,12 @@ if __name__ == '__main__':
     #    ["crypto"]      //crypto subs
     #    ["abc", "def"]  //custom
     subs = ["wallstreetbets"]
-
-    start_time = time.time()
-    deep_scrape(symbols, subs)
-    end_time = time.time()
     # SubredditScraper('wallstreetbets', lim=200, sort='hot').get_posts(symbols)
 
-    print(f"DONE!! ------ time: {end_time-start_time} seconds")
+    start_time = time.time()
+    deep_scrape(symbols, subs, num_threads, num_posts)
+    end_time = time.time()
+    print(f"------ time: {end_time - start_time} seconds | threads: 12 | posts: 1000")
+
+
+
