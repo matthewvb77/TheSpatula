@@ -1,1 +1,2 @@
 SECONDS_IN_DAY = 86400
+META_CHARS = ".*?+^$|"

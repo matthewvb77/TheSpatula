@@ -98,20 +98,16 @@ class SubredditScraper:
             post = subreddit[i]
             if post.link_flair_text != 'Meme':
                 for stock in stock_tickers.keys():
-                    try:
-                        if (re.search(r"\s+\$?" + stock + r"\$?\s+", post.selftext) or re.search(
-                                r"\s+\$?" + stock + r"\$?\s+", post.title)):
-                            stock_tickers[stock][post.id] = StockPost(post.id, post.permalink, post.ups, post.downs,
-                                                                      post.num_comments, stock, post.created_utc)
-                    except:
-                        print(f"This Ticker threw an exception: {stock}")
-                        traceback.print_exc()
+                    if (re.search(r"\s+\$?" + re.escape(stock) + r"\$?\s+", post.selftext) or re.search(
+                            r"\s+\$?" + re.escape(stock) + r"\$?\s+", post.title)):
+                        stock_tickers[stock][post.id] = StockPost(post.id, post.permalink, post.ups, post.downs,
+                                                                  post.num_comments, stock, post.created_utc)
 
         for stock in stock_tickers.keys():
             if len(stock_tickers[stock]) > 0:
                 for post in stock_tickers[stock]:
                     relevant_posts.append(stock_tickers[stock][post])
-                    # semap.acquire()
+
         # json_object = json.dumps(relevant_posts, default=json_def_encoder, indent = 4)
         # print(json_object)
 
@@ -120,7 +116,7 @@ class SubredditScraper:
         cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
         mycursor = cnx.cursor()
         assert mycursor
-        assert DatabaseHandler.table_exists(mycursor, "test_db")
+        assert DatabaseHandler.table_exists(mycursor, "reddit")
 
         for x in tqdm(range(len(relevant_posts)), desc="[2/2] Updating Database", leave=False):
             post = relevant_posts[x]
@@ -137,7 +133,7 @@ class SubredditScraper:
 
             # Add post, if it exists already, update post #
             mycursor.execute(f"""
-            INSERT INTO test_db (post_id, symbol, num_comments, num_votes, date_posted) 
+            INSERT INTO reddit (post_id, symbol, num_comments, num_votes, date_posted) 
             VALUES("{post.postID}", "{post.stock}", {post.numComments}, {num_votes}, "{date_posted}")
             ON DUPLICATE KEY UPDATE num_comments={post.numComments}, num_votes={num_votes}, date_posted="{date_posted}"
             ;""")
@@ -198,7 +194,7 @@ if __name__ == '__main__':
     #    ["abc", "def"]  //custom
     subs = ["wallstreetbets"]
 
-    # deep_scrape(symbols, subs)
-    SubredditScraper('wallstreetbets', lim=20, sort='hot').get_posts(symbols)
+    deep_scrape(symbols, subs)
+    # SubredditScraper('wallstreetbets', lim=200, sort='hot').get_posts(symbols)
 
     print("DONE!!")
