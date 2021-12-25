@@ -25,7 +25,7 @@ def get_hist(symbol, date_range):
     assert DatabaseHandler.table_exists(mycursor, "reddit")
 
     mycursor.execute(f"""
-        SELECT num_votes, num_comments, date_posted
+        SELECT num_votes, num_comments, DATE(date_posted)
         FROM reddit
         WHERE symbol="{symbol}"
         AND date_posted > "{date_range[0]}"
@@ -99,10 +99,11 @@ def plot_hist(symbol, data_date_range, chart_reddit, chart_youtube):
     plt.title(f"{symbol} Chart")
     plt.xlabel("Date Posted")
     plt.ylabel("Units")
-    plt.legend(["Reddit Votes", "Reddit Comments", "Youtube Views"])
+    plt.legend(["Reddit Votes", "Reddit Comments", "Youtube Views [Hundreds]"])
 
     fig = plt.gcf()
     fig.set_size_inches(18.5, 10.5)
+    plt.show()
 
 
 if __name__ == "__main__":
