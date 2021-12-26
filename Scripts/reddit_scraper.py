@@ -176,7 +176,7 @@ if __name__ == '__main__':
     # CONFIG #
     user = DatabaseHandler.User("my_win")
     num_threads = 12
-    num_posts = 100
+    num_posts = 10000
 
     # stocklist options:
     #    ["stocks"]         //all stocks on NYSE and Nasdaq
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     start_time = time.time()
     deep_scrape(symbols, subs, num_threads, num_posts)
     end_time = time.time()
-    print(f"------ time: {end_time - start_time} seconds | threads: 12 | posts: 1000")
+    print(f"------ time: {end_time - start_time} seconds | threads: {num_threads} | posts: {num_posts}")
 
 
 
