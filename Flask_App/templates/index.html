@@ -1,12 +1,6 @@
-<!DOCTYPE html>
+{% extends "layout.html" %}
 
-<html lang="en">
-<title>W3.CSS Templated</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<body>
-
+{% block body %}
 <!-- Navbar (sit on top) -->
 <div class="w3-top">
   <div class="w3-bar w3-white w3-wide w3-padding w3-card">
@@ -32,6 +26,8 @@
 <div class="w3-content w3-padding" style="max-width:1564px">
 
   <!-- TrendSearch Section -->
+
+
   <div class="w3-container w3-padding-32" id="trendsearch">
     <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">TrendSearch</h3>
     <form>
@@ -39,7 +35,15 @@
       <input type="date" id="start" name="date-start" value="1970-01-01" min="2010-01-01">
       <label for="end">to:</label>
       <input type="date" id="end" name="date-end" value="1970-01-01" min="2010-01-01">
-
+      <div class="dropdown">
+        <button onclick="getData()" class="dropbtn">Symbols</button>
+        <div id="myDropdown" class="dropdown-content">
+          <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+          <a href="#test1">test1</a>
+          <a href="#test2">test2</a>
+          <a href="#test3">test3</a>
+        </div>
+      </div>
     </form>
     <canvas id="chart" width="400" height="400"></canvas>
     <script>
@@ -85,7 +89,7 @@
   <!-- About Section -->
   <div class="w3-container w3-padding-32" id="about">
     <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">About</h3>
-    <p> RedditTrends is a tool where you can discover the frequency of stocks or crypto in Reddit posts.
+    <p> RedditTrends is a tool where you can discover the frequency of stocks or crypto symbols in Reddit posts.
       <br>
       <br> **DISCLAIMER** This data is scraped by keyword, so symbols with alternate meanings will have disproportionately high post/vote/comment frequency. (ex. A, HI, AND)
     </p>
@@ -93,7 +97,7 @@
 
   <div class="w3-row-padding w3-grayscale">
     <div class="w3-col l3 m6 w3-margin-bottom">
-      <img src="/w3images/team2.jpg" alt="Matthew" style="width:100%">
+<!--      <img src="/w3images/team2.jpg" alt="Matthew" style="width:100%">-->
       <h3>Matthew Van Brummelen</h3>
       <p class="w3-opacity">Author</p>
       <p>4th-Year Software Engineering student at the University of Victoria</p>
@@ -125,6 +129,4 @@
   <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-green">w3.css</a></p>
 </footer>
 
-</body>
-
-</html>
+{% endblock %}
