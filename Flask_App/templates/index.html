@@ -89,7 +89,7 @@
   <!-- About Section -->
   <div class="w3-container w3-padding-32" id="about">
     <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">About</h3>
-    <p> RedditTrends is a tool where you can discover the frequency of stocks or crypto symbols in Reddit posts.
+    <p> RedditTrends is a tool where you can discover the frequency of stock/crypto symbols in Reddit posts.
       <br>
       <br> **DISCLAIMER** This data is scraped by keyword, so symbols with alternate meanings will have disproportionately high post/vote/comment frequency. (ex. A, HI, AND)
     </p>
@@ -97,9 +97,9 @@
 
   <div class="w3-row-padding w3-grayscale">
     <div class="w3-col l3 m6 w3-margin-bottom">
-<!--      <img src="/w3images/team2.jpg" alt="Matthew" style="width:100%">-->
+      <img src="{{ url_for('static', filename='images/headshot.jpg') }}" alt="Matthew" style="width:40%">
       <h3>Matthew Van Brummelen</h3>
-      <p class="w3-opacity">Author</p>
+      <p class="w3-opacity">Project Developer</p>
       <p>4th-Year Software Engineering student at the University of Victoria</p>
       <p><button class="w3-button w3-light-grey w3-block">Contact</button></p>
     </div>
