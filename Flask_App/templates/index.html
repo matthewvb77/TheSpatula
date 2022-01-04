@@ -52,43 +52,7 @@
       </div>
     </form>
     <canvas id="chart" width="200" height="200"></canvas>
-    <script>
-      const ctx = document.getElementById('chart').getContext('2d');
-      const myChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
-    </script>
+    <script src="../static/js/chart.js"></script>
   </div>
 </div>
 
@@ -107,14 +71,14 @@
       <h3>Matthew Van Brummelen</h3>
       <p class="w3-opacity">Project Developer</p>
       <p>4th-Year Software Engineering student at the University of Victoria</p>
-      <p><button class="w3-button w3-light-grey w3-block">Contact</button></p>
+<!--      <p><button class="w3-button w3-light-grey w3-block">Contact</button></p>-->
     </div>
   </div>
 
   <!-- Contact Section -->
-<!--  <div class="w3-container w3-padding-32" id="contact">-->
-<!--    <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">Contact</h3>-->
-<!--    <p>Feel free to message me if you have any questions.</p>-->
+  <div class="w3-container w3-padding-32" id="contact">
+    <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">Contact</h3>
+    <p>Message me at <b>blah@gmail.com</b> if you have any questions.</p>
 <!--    <form action="/action_page.php" target="_blank">-->
 <!--      <input class="w3-input w3-border" type="text" placeholder="Name" required name="Name">-->
 <!--      <input class="w3-input w3-section w3-border" type="text" placeholder="Email" required name="Email">-->
@@ -124,7 +88,7 @@
 <!--        <i class="fa fa-paper-plane"></i> SEND MESSAGE-->
 <!--      </button>-->
 <!--    </form>-->
-<!--  </div>-->
+  </div>
 
 <!-- End page content -->
 </div>

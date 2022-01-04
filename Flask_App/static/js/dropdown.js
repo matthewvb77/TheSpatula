@@ -1,14 +1,14 @@
 /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
 function showDropdown() {
-  document.getElementById("myDropdown").classList.toggle("show");
+  document.getElementById("tickerDropdown").classList.toggle("show");
 }
 
 function filterFunction() {
   var input, filter, ul, li, a, i;
   input = document.getElementById("myInput");
   filter = input.value.toUpperCase();
-  div = document.getElementById("myDropdown");
+  div = document.getElementById("tickerDropdown");
   a = div.getElementsByTagName("a");
   for (i = 0; i < a.length; i++) {
     txtValue = a[i].textContent || a[i].innerText;
