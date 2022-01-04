@@ -36,7 +36,7 @@
       <label for="end">to:</label>
       <input type="date" id="end" name="date-end" value="1970-01-01" min="2010-01-01">
       <div class="dropdown">
-        <button onclick="showDropdown()" class="dropbtn">Symbols</button>
+        <button onclick="showDropdown()" class="dropbtn">Ticker Dropdown</button>
         <div id="myDropdown" class="dropdown-content">
           <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
           <a href="#test1">test1</a>
@@ -45,7 +45,7 @@
         </div>
       </div>
     </form>
-    <canvas id="chart" width="400" height="400"></canvas>
+    <canvas id="chart" width="200" height="200"></canvas>
     <script>
       const ctx = document.getElementById('chart').getContext('2d');
       const myChart = new Chart(ctx, {
@@ -89,7 +89,7 @@
   <!-- About Section -->
   <div class="w3-container w3-padding-32" id="about">
     <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">About</h3>
-    <p> RedditTrends is a tool where you can discover the frequency of stock/crypto symbols in Reddit posts.
+    <p> RedditTrends is a tool where you can research the frequency of stock/crypto symbols in Reddit posts.
       <br>
       <br> **DISCLAIMER** This data is scraped by keyword, so symbols with alternate meanings will have disproportionately high post/vote/comment frequency. (ex. A, HI, AND)
     </p>
