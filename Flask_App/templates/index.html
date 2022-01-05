@@ -41,12 +41,13 @@
         <div id="tickerDropdown" class="dropdown-content">
           <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
           <script>
-            var arrayVariable = ['apple', 'orange', 'banana']
+            var arrayVariable = ['apple', 'orange', 'banana', 'test4', 'test5', 'test6', 'test7', 'test8', 'test9', 'test10', 'test11']
             $.each(arrayVariable, function(index, value) {
               $('<a />', {
                 'text': value
               }).appendTo('#tickerDropdown');
             });
+            filterFunction();
           </script>
         </div>
       </div>

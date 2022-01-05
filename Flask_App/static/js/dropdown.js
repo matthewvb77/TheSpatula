@@ -6,14 +6,17 @@ function showDropdown() {
 
 function filterFunction() {
   var input, filter, ul, li, a, i;
+  var counter = 0;
+  var max_size = 8;
   input = document.getElementById("myInput");
   filter = input.value.toUpperCase();
   div = document.getElementById("tickerDropdown");
   a = div.getElementsByTagName("a");
   for (i = 0; i < a.length; i++) {
     txtValue = a[i].textContent || a[i].innerText;
-    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+    if ((txtValue.toUpperCase().indexOf(filter) > -1) && counter < max_size) {
       a[i].style.display = "";
+      counter++;
     } else {
       a[i].style.display = "none";
     }
