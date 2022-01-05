@@ -12,9 +12,9 @@ function filterFunction() {
   filter = input.value.toUpperCase();
   div = document.getElementById("tickerDropdown");
   a = div.getElementsByTagName("a");
-  for (i = 0; i < a.length; i++) {
+  for (i = 0; i < a.length && counter<max_size; i++) {
     txtValue = a[i].textContent || a[i].innerText;
-    if ((txtValue.toUpperCase().indexOf(filter) > -1) && counter < max_size) {
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
       a[i].style.display = "";
       counter++;
     } else {
