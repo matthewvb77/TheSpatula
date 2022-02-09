@@ -131,7 +131,7 @@ class SubredditScraper:
 
             # Add post, if it exists already, update post #
             mycursor.execute(f"""
-            INSERT INTO test_db (post_id, symbol, num_comments, num_votes, date_posted) 
+            INSERT INTO reddit (post_id, symbol, num_comments, num_votes, date_posted) 
             VALUES("{post.postID}", "{post.stock}", {post.numComments}, {num_votes}, "{date_posted}")
             ON DUPLICATE KEY UPDATE num_comments={post.numComments}, num_votes={num_votes}, date_posted="{date_posted}"
             ;""")
@@ -182,7 +182,7 @@ if __name__ == '__main__':
     #    ["stocks"]         //all stocks on NYSE and Nasdaq
     #    ["crypto"]         //all crypto
     #    ["abc", "def"]     //custom
-    symbols = ["TSLA", "GOOG", "PLTR"]
+    symbols = ["PTON"]
 
     # sublist options:
     #    ["all"]         //crypto and stock subs
@@ -190,7 +190,6 @@ if __name__ == '__main__':
     #    ["crypto"]      //crypto subs
     #    ["abc", "def"]  //custom
     subs = ["wallstreetbets"]
-    # SubredditScraper('wallstreetbets', lim=200, sort='hot').get_posts(symbols)
 
     start_time = time.time()
     deep_scrape(symbols, subs, num_threads, num_posts)

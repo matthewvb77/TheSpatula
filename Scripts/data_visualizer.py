@@ -109,6 +109,6 @@ def plot_hist(symbol, data_date_range, chart_reddit, chart_youtube):
 if __name__ == "__main__":
     user = DatabaseHandler.User("my_win")
 
-    timeframe = ("2021-08-01", "2021-08-10")
+    timeframe = ("2022-02-01", "2022-02-08")
 
-    plot_hist("TSLA", timeframe, chart_reddit=True, chart_youtube=False)
+    plot_hist("PTON", timeframe, chart_reddit=True, chart_youtube=False)
