@@ -5,7 +5,7 @@ import re
 import constant
 from concurrent.futures import ThreadPoolExecutor
 import time
-from Scripts import DatabaseHandler
+import DatabaseHandler
 
 from datetime import datetime
 from dateutil import tz
@@ -13,6 +13,12 @@ from dateutil import tz
 
 class StockPost(object):
     def __init__(self, postID, postURL, ups, downs, numComments, stock, date):
+        assert isinstance(postID, str) and postID, "postID must be a non-empty string"
+        assert isinstance(postURL, str) and postURL, "postURL must be a non-empty string"
+        assert isinstance(stock, str) and stock, "stock must be a non-empty string"
+        assert isinstance(ups, int) and ups >= 0, "ups must be a non-negative integer"
+        assert isinstance(downs, int) and downs >= 0, "downs must be a non-negative integer"
+        assert isinstance(numComments, int) and numComments >= 0, "numComments must be a non-negative integer"
         self.postID = postID
         self.url = postURL
         self.stock = stock
@@ -36,6 +42,9 @@ def json_def_encoder(obj):
 class SubredditScraper:
 
     def __init__(self, sub, sort='new', lim=900):
+        assert isinstance(sub, str) and sub, "sub must be a non-empty string"
+        assert sort in ['new', 'top', 'hot'], "sort must be one of 'new', 'top', or 'hot'"
+        assert isinstance(lim, int) and lim > 0, "lim must be a positive integer"
         self.sub = sub
         self.sort = sort
         self.lim = lim
@@ -46,6 +55,7 @@ class SubredditScraper:
         # f'sub = {sub}, sort = {sort}, lim = {lim}')
 
     def set_sort(self):
+        assert isinstance(self.sort, str), "Sort must be a string"
         if self.sort == 'new':
             return self.sort, self.reddit.subreddit(self.sub).new(limit=self.lim)
         elif self.sort == 'top':
@@ -58,7 +68,8 @@ class SubredditScraper:
             return self.sort, self.reddit.subreddit(self.sub).hot(limit=self.lim)
 
     def get_posts(self, stock_list):
-
+        
+        assert isinstance(stock_list, list) and all(isinstance(stock, str) for stock in stock_list), "stock_list must be a list of strings"
         stock_tickers = {}
 
         if stock_list == ["stocks"]:
@@ -141,6 +152,10 @@ class SubredditScraper:
 
 # get_posts() every subreddit with 10000 post limit #
 def deep_scrape(stocklist, sublist, num_workers, max_posts):
+    assert isinstance(stocklist, list) and all(isinstance(stock, str) for stock in stocklist), "stocklist must be a list of strings"
+    assert isinstance(sublist, list) and all(isinstance(sub, str) for sub in sublist), "sublist must be a list of strings"
+    assert isinstance(num_workers, int) and num_workers > 0, "num_workers must be a positive integer"
+    assert isinstance(max_posts, int) and max_posts > 0, "max_posts must be a positive integer"
     if sublist == ["all"]:
         subreddits = ["CryptoCurrency", "CryptoMoonShots", "CryptoMarkets", "Crypto_com", "wallstreetbets",
                       "Wallstreetbetsnew", "stocks", "RobinHoodPennyStocks", "pennystocks", "weedstocks", "trakstocks",

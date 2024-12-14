@@ -11,6 +11,7 @@ from Scripts import DatabaseHandler
 
 
 def get_driver():
+    assert hasattr(user, "path") and isinstance(user.path, str), "User must have a valid path attribute"
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--disable-gpu')
@@ -18,6 +19,8 @@ def get_driver():
 
 
 def get_entries():
+    assert driver is not None, "Driver must be initialized"
+    assert wait is not None, "WebDriverWait instance must be initialized"
     # Use Headless browser
 
     driver.get("https://ca.investing.com/crypto/currencies")

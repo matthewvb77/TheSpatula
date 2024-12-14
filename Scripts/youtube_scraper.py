@@ -10,11 +10,14 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from tqdm import tqdm
 
-from Scripts import DatabaseHandler
+import DatabaseHandler
 
 
 class StockVid(object):
     def __init__(self, href, date, views):
+        assert isinstance(href, str) and href, "href must be a non-empty string"
+        assert isinstance(date, (str, datetime)), "date must be a valid date string or datetime object"
+        assert isinstance(views, int) and views >= 0, "views must be a non-negative integer"
         self.post_id = href
         self.date = date
         self.views = views
@@ -31,6 +34,7 @@ def json_def_encoder(obj):
 
 
 def get_date(post):
+    assert post is not None, "Post cannot be None"
     today = datetime.today()
 
     try:
@@ -71,6 +75,7 @@ def get_date(post):
 
 
 def get_views(post):
+    assert post is not None, "Post cannot be None"
     try:
         views_data = post.find_element_by_xpath(".//*[@id='metadata-line']/span[1]").text
     except:
@@ -102,7 +107,7 @@ def get_views(post):
 
 
 def get_vids(stock):
-
+    assert isinstance(stock, str) and stock, "Stock must be a non-empty string"
     stock_tickers = {stock: {}}
     relevant_posts = []
 
@@ -183,6 +188,7 @@ def get_vids(stock):
 
 
 def deep_scrape(stock_data):
+    assert isinstance(stock_data, list) and all(isinstance(stock, str) and stock for stock in stock_data), "stock_data must be a list of non-empty strings"
     threads = []
 
     for x in tqdm(range(len(stock_data)), desc="DEEP SCRAPE"):

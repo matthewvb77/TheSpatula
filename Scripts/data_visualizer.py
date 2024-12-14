@@ -18,6 +18,8 @@ class StockHist(object):
 
 
 def get_hist(symbol, date_range):
+    assert isinstance(symbol, str) and symbol, "Symbol must be a non-empty string"
+    assert isinstance(date_range, tuple) and len(date_range) == 2, "Date range must be a tuple with two elements"
     # get reddit history #
     cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
     mycursor = cnx.cursor()
@@ -88,6 +90,11 @@ def get_hist(symbol, date_range):
 
 
 def plot_hist(symbol, data_date_range, chart_reddit, chart_youtube):
+    assert isinstance(symbol, str) and symbol, "Symbol must be a non-empty string"
+    assert isinstance(data_date_range, tuple) and len(data_date_range) == 2, "Date range must be a tuple with two elements"
+    assert isinstance(chart_reddit, bool), "chart_reddit must be a boolean"
+    assert isinstance(chart_youtube, bool), "chart_youtube must be a boolean"
+
     hist = get_hist(symbol, data_date_range)
 
     if chart_reddit:

@@ -4,6 +4,8 @@ import json
 
 
 def table_exists(cursor, tbl_name):
+    assert cursor is not None, "Cursor cannot be None"
+    assert isinstance(tbl_name, str) and tbl_name, "Table name must be a non-empty string"
     cursor.execute(f"""
         SELECT COUNT(*)
         FROM information_schema.tables
@@ -16,6 +18,8 @@ def table_exists(cursor, tbl_name):
 
 # returns connection object
 def connect_to_db(user, db_name):
+    assert isinstance(user, User), "User must be an instance of the User class"
+    assert isinstance(db_name, str) and db_name, "Database name must be a non-empty string"
     cnx = mysql.connector.connect(
         user=user.db_user,
         password=user.db_password,
