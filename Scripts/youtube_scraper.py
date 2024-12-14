@@ -164,10 +164,10 @@ def get_vids(stock):
 
     # Updating Database #
 
-    cnx = db_handler.connect_to_db(user, "TheSpatula")
+    cnx = DatabaseHandler.connect_to_db(user, "TheSpatula")
     my_cursor = cnx.cursor()
     assert my_cursor
-    assert table_exists(my_cursor, "youtube")
+    assert DatabaseHandler.table_exists(my_cursor, "youtube")
 
     for x in tqdm(range(len(relevant_posts)), desc="[3/3] Updating Database"):
         post = relevant_posts[x]
